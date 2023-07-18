@@ -13,15 +13,16 @@ import re
 import urllib.parse
 from io import BytesIO
 import pandas as pd
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 def Get_Cookies(url_login,url_target):
     strr = ''  # 创建空的cookie值
     while (True):
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('detach', True)  # 不自动关闭浏览器
-        options.add_argument('--start-maximized')  # 浏览器窗口最大化
+        options = Options()
+        options.add_argument('--disable-gpu') # 用于禁用GPU加速，有助于在无头模式下避免一些兼容性问题
+        options.add_argument('--headless')  # 将浏览器设置为无头模式，即不显示GUI界面，以便在后台执行
         driver =  webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.get(url_login)
 
