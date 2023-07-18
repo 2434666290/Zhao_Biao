@@ -59,7 +59,7 @@ def Get_Cookies(url_login,url_target):
                 strr += '='
                 strr += c['value']
                 strr += ';'
-            st.write('获取cookies成功')
+            st.success('获取cookies成功')
             image_stream.close()  # 关闭内存文件对象
             break
         except:
