@@ -23,6 +23,8 @@ def Get_Cookies(url_login,url_target):
         options = Options()
         options.add_argument('--disable-gpu') # 用于禁用GPU加速，有助于在无头模式下避免一些兼容性问题
         options.add_argument('--headless')  # 将浏览器设置为无头模式，即不显示GUI界面，以便在后台执行
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
         driver =  webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.get(url_login)
 
