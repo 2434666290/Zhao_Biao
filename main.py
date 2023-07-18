@@ -382,6 +382,8 @@ if __name__ == '__main__':
     # 创建一个会话对象保持动态连接
     session = requests.Session()
     st.title("招标网爬取工具")   # Streamlit应用程序的标题和描述
+    user_name = st.sidebar.text_input('输入用户名')
+    secret = st.sidebar.text_input('输入密码')
     choose = st.sidebar.selectbox('爬取数据选项', ['爬取一年内的数据', '访问历史库往年数据'])
     if choose == '爬取一年内的数据':
         year_data = st.container()
