@@ -17,7 +17,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-def Get_Cookies(url_login,url_target,uer_name,secret):
+def Get_Cookies(url_login,url_target,user_name,secret):
     strr = ''  # 创建空的cookie值
     while (True):
         with st.spinner('Loading cookie...'):
@@ -399,7 +399,7 @@ if __name__ == '__main__':
             end_time = st.text_input('请输入你要爬取的结束时间（如：20220605):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target,uer_name,secret)
+            cookie = Get_Cookies(login_url, url_target,user_name,secret)
             total_page_1 = get_total_page_1(main_url, keyword, Information_category, start_time, end_time, cookie)
             with st.spinner('Running...'):
                 time.sleep(5)
@@ -419,7 +419,7 @@ if __name__ == '__main__':
             month = st.text_input('请输入你要访问的月份（如：01):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target,uer_name,secret)
+            cookie = Get_Cookies(login_url, url_target,user_name,secret)
             total_page_2 = get_total_page_2(main_url, keyword, Information_category, year, month, cookie)
             with st.spinner('Running...'):
                 time.sleep(5)
