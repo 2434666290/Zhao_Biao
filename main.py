@@ -36,7 +36,7 @@ def Get_Cookies(url_login,url_target,user_name,secret):
             password_input = driver.find_element(By.ID, 'loginPassword')
             captcha = driver.find_element(By.ID, 'yzm')
             login_button = driver.find_element(By.CLASS_NAME, 'login_button')
-            username_input.send_keys(uer_name)  # 填写用户名
+            username_input.send_keys(user_name)  # 填写用户名
             password_input.send_keys(secret)  # 填写密码
             # 识别验证码部分
             png = driver.find_element(By.ID, 'randimg')
