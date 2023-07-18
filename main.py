@@ -20,51 +20,52 @@ from webdriver_manager.chrome import ChromeDriverManager
 def Get_Cookies(url_login,url_target):
     strr = ''  # 创建空的cookie值
     while (True):
-        options = Options()
-        options.add_argument('--disable-gpu') # 用于禁用GPU加速，有助于在无头模式下避免一些兼容性问题
-        options.add_argument('--headless')  # 将浏览器设置为无头模式，即不显示GUI界面，以便在后台执行
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        driver =  webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        driver.get(url_login)
-
-        zhanghao_mima = driver.find_element(By.ID, 'zh')
-        zhanghao_mima.click()
-        # 定位账号，密码，验证码和登录按钮部分
-        username_input = driver.find_element(By.ID, 'loginUserId')
-        password_input = driver.find_element(By.ID, 'loginPassword')
-        captcha = driver.find_element(By.ID, 'yzm')
-        login_button = driver.find_element(By.CLASS_NAME, 'login_button')
-        username_input.send_keys('zhjk2019')  # 填写用户名
-        password_input.send_keys('535cmeyr')  # 填写密码
-        # 识别验证码部分
-        png = driver.find_element(By.ID, 'randimg')
-        screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
-        image_stream = BytesIO(screenshot)  # 使用BytesIO创建一个内存文件对象
-        image = Image.open(image_stream)  # 通过内存文件对象加载图像
-        ocr = ddddocr.DdddOcr()  # 验证码识别库
-        res = ocr.classification(image)
-        captcha.send_keys(res)  # 输入识别的验证码
-        login_button.click()
-        # 等待页面跳转
-        wait = WebDriverWait(driver, 10)
-        try:
-            wait.until(EC.url_to_be(url_target))
-            time.sleep(5)
-            cookie = driver.get_cookies()
-            strr = ''
-            # print(Cookie)
-            for c in cookie:
-                strr += c['name']
-                strr += '='
-                strr += c['value']
-                strr += ';'
-            st.success('获取cookies成功')
-            image_stream.close()  # 关闭内存文件对象
-            break
-        except:
-            image_stream.close()  # 关闭内存文件对象
-            continue
+        with st.spinner('Loading cookie...'):
+            options = Options()
+            options.add_argument('--disable-gpu') # 用于禁用GPU加速，有助于在无头模式下避免一些兼容性问题
+            options.add_argument('--headless')  # 将浏览器设置为无头模式，即不显示GUI界面，以便在后台执行
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            driver =  webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            driver.get(url_login)
+    
+            zhanghao_mima = driver.find_element(By.ID, 'zh')
+            zhanghao_mima.click()
+            # 定位账号，密码，验证码和登录按钮部分
+            username_input = driver.find_element(By.ID, 'loginUserId')
+            password_input = driver.find_element(By.ID, 'loginPassword')
+            captcha = driver.find_element(By.ID, 'yzm')
+            login_button = driver.find_element(By.CLASS_NAME, 'login_button')
+            username_input.send_keys('zhjk2019')  # 填写用户名
+            password_input.send_keys('535cmeyr')  # 填写密码
+            # 识别验证码部分
+            png = driver.find_element(By.ID, 'randimg')
+            screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
+            image_stream = BytesIO(screenshot)  # 使用BytesIO创建一个内存文件对象
+            image = Image.open(image_stream)  # 通过内存文件对象加载图像
+            ocr = ddddocr.DdddOcr()  # 验证码识别库
+            res = ocr.classification(image)
+            captcha.send_keys(res)  # 输入识别的验证码
+            login_button.click()
+            # 等待页面跳转
+            wait = WebDriverWait(driver, 10)
+            try:
+                wait.until(EC.url_to_be(url_target))
+                time.sleep(5)
+                cookie = driver.get_cookies()
+                strr = ''
+                # print(Cookie)
+                for c in cookie:
+                    strr += c['name']
+                    strr += '='
+                    strr += c['value']
+                    strr += ';'
+                st.success('获取cookies成功')
+                image_stream.close()  # 关闭内存文件对象
+                break
+            except:
+                image_stream.close()  # 关闭内存文件对象
+                continue
     return strr
 
 def Create_dataframe():
@@ -398,8 +399,9 @@ if __name__ == '__main__':
         if submit_button:
             cookie = Get_Cookies(login_url, url_target)
             total_page_1 = get_total_page_1(main_url, keyword, Information_category, start_time, end_time, cookie)
-            time.sleep(5)
-            main(total_page_1)
+            with st.spinner('Running...'):
+                time.sleep(5)
+                main(total_page_1)
             download_df_to_excel()
             st.write(df)
     if choose == '访问历史库往年数据':
@@ -417,8 +419,9 @@ if __name__ == '__main__':
         if submit_button:
             cookie = Get_Cookies(login_url, url_target)
             total_page_2 = get_total_page_2(main_url, keyword, Information_category, year, month, cookie)
-            time.sleep(5)
-            main(total_page_2)
+            with st.spinner('Running...'):
+                time.sleep(5)
+                main(total_page_2)
             download_df_to_excel()
             st.write(df)
 
