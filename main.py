@@ -248,8 +248,10 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
             if th in text and succeed_price == '' and re.search(pattern, text) != None:
                 succeed_price = re.search(pattern, text).group(1)
 
-        if any(th in text for th in bidding_prices) and succeed_price == '' and re.search(r"：\s*(.*)", text) != None and from_data_1_cannels == 'bidding':
-            bidding_price = re.search(r"：\s*(.*)", text).group(1)
+        for th in bidding_prices:
+            pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
+            if th in text and succeed_price == '' and re.search(pattern, text) != None:
+                bidding_price = re.search(pattern, text).group(1)
 
     # 下载网页中存在的附件
     Appendix = ''
