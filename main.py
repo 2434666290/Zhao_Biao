@@ -424,12 +424,10 @@ if __name__ == '__main__':
                 '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
             if Information_category == '招标公告':
                 Information_category = 'bidding'
-            elif Information_category == '中标公告':
+            if Information_category == '中标公告':
                 Information_category = 'succeed'
-            elif Information_category == '采购公告':
+            if Information_category == '采购公告':
                 Information_category = 'cgall'
-            else:
-                st.warning('输入错误')
             start_time = st.text_input('请输入你要爬取的开始时间（如：20220605):')
             end_time = st.text_input('请输入你要爬取的结束时间（如：20220605):')
             submit_button = st.form_submit_button('开始爬取')
@@ -451,12 +449,10 @@ if __name__ == '__main__':
                 '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
             if Information_category == '招标公告':
                 Information_category = 'bidding'
-            elif Information_category == '中标公告':
+            if Information_category == '中标公告':
                 Information_category = 'succeed'
-            elif Information_category == '采购公告':
+            if Information_category == '采购公告':
                 Information_category = 'cgall'
-            else:
-                st.warning('输入错误')
             year = st.text_input('请输入你要需要访问的年份（如：2022):')
             month = st.text_input('请输入你要访问的月份（如：01):')
             submit_button = st.form_submit_button('开始爬取')
