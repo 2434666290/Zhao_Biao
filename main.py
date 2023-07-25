@@ -13,55 +13,55 @@ import re
 import urllib.parse
 from io import BytesIO
 import pandas as pd
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-
-def Get_Cookies(url_login,url_target):
+def Get_Cookies(url_login, url_target, user_name, secret):
     strr = ''  # 创建空的cookie值
-    while (True):
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('detach', True)  # 不自动关闭浏览器
-        options.add_argument('--start-maximized')  # 浏览器窗口最大化
-        driver =  webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        driver.get(url_login)
+    with st.spinner('Loading cookie...'):
+        while (True):
+            options = Options()
+            options.add_argument('--disable-gpu')
+            options.add_argument('--headless')
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            driver.get(url_login)
 
-        zhanghao_mima = driver.find_element(By.ID, 'zh')
-        zhanghao_mima.click()
-        # 定位账号，密码，验证码和登录按钮部分
-        username_input = driver.find_element(By.ID, 'loginUserId')
-        password_input = driver.find_element(By.ID, 'loginPassword')
-        captcha = driver.find_element(By.ID, 'yzm')
-        login_button = driver.find_element(By.CLASS_NAME, 'login_button')
-        username_input.send_keys('zhjk2019')  # 填写用户名
-        password_input.send_keys('535cmeyr')  # 填写密码
-        # 识别验证码部分
-        png = driver.find_element(By.ID, 'randimg')
-        screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
-        image_stream = BytesIO(screenshot)  # 使用BytesIO创建一个内存文件对象
-        image = Image.open(image_stream)  # 通过内存文件对象加载图像
-        ocr = ddddocr.DdddOcr()  # 验证码识别库
-        res = ocr.classification(image)
-        captcha.send_keys(res)  # 输入识别的验证码
-        login_button.click()
-        # 等待页面跳转
-        wait = WebDriverWait(driver, 10)
-        try:
-            wait.until(EC.url_to_be(url_target))
-            time.sleep(5)
-            cookie = driver.get_cookies()
-            strr = ''
-            # print(Cookie)
-            for c in cookie:
-                strr += c['name']
-                strr += '='
-                strr += c['value']
-                strr += ';'
-            st.write('获取cookies成功')
-            image_stream.close()  # 关闭内存文件对象
-            break
-        except:
-            image_stream.close()  # 关闭内存文件对象
-            continue
+            zhanghao_mima = driver.find_element(By.ID, 'zh')
+            zhanghao_mima.click()
+            # 定位账号，密码，验证码和登录按钮部分
+            username_input = driver.find_element(By.ID, 'loginUserId')
+            password_input = driver.find_element(By.ID, 'loginPassword')
+            captcha = driver.find_element(By.ID, 'yzm')
+            login_button = driver.find_element(By.CLASS_NAME, 'login_button')
+            username_input.send_keys(user_name)  # 填写用户名 zhjk2019
+            password_input.send_keys(secret)  # 填写密码 535cmeyr
+            # 识别验证码部分
+            png = driver.find_element(By.ID, 'randimg')
+            screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
+            image_stream = BytesIO(screenshot)  # 使用BytesIO创建一个内存文件对象
+            image = Image.open(image_stream)  # 通过内存文件对象加载图像
+            ocr = ddddocr.DdddOcr()  # 验证码识别库
+            res = ocr.classification(image)
+            captcha.send_keys(res)  # 输入识别的验证码
+            login_button.click()
+            # 等待页面跳转
+            wait = WebDriverWait(driver, 10)
+            try:
+                wait.until(EC.url_to_be(url_target))
+                time.sleep(5)
+                cookie = driver.get_cookies()
+                strr = ''
+                for c in cookie:
+                    strr += c['name']
+                    strr += '='
+                    strr += c['value']
+                    strr += ';'
+                st.success('获取cookies成功！')
+                image_stream.close()  # 关闭内存文件对象
+                break
+            except:
+                image_stream.close()  # 关闭内存文件对象
+                continue
     return strr
 
 def Create_dataframe():
@@ -176,13 +176,12 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
     bidding_price = ''
     # 构建网页中的表格信息
     table_elements = html_3.xpath('//table')
-    for table_element in table_elements: # 遍历网页中所有的表格
+    for table_element in table_elements:  # 遍历网页中所有的表格（构造表格为竖状表格）
         table = []
         # 确认解码网页中是否含有thead标签
         thead_elements = table_element.xpath('.//thead/th')
         if thead_elements:
             for thead in thead_elements:
-                print(thead.xpath('.//th/text()'))
                 table.append(thead.xpath('.//th/text()'))
         for trs in table_element.xpath('.//tr'):
             table_2 = []
@@ -220,13 +219,38 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
                         for columns in aligned_list[0]:
                             if '品牌' in columns and brand == '':
                                 brand = aligned_list[k][f]
-                            if any(th in columns for th in succeed_prices) and succeed_price == '' and from_data_1_cannels == 'succeed':
+                            if any(th in columns for th in
+                                       succeed_prices) and succeed_price == '' and from_data_1_cannels == 'succeed':
                                 succeed_price = aligned_list[k][f]
-                            if any(th in columns for th in bidding_prices) and succeed_price == '' and from_data_1_cannels == 'bidding':
+                            if any(th in columns for th in bidding_prices) and bidding_price == '' and (
+                                        from_data_1_cannels == 'bidding' or from_data_1_cannels == 'cgall'):
                                 bidding_price = aligned_list[k][f]
                             if any(th in columns for th in suppliers) and supplier == '':
                                 supplier = aligned_list[k][f]
                             f = f + 1  # 循环扫描列的索引
+                # 将表格竖向转换为横向表格，通过字典的形式呈现
+                dict_table = {}
+                for row in aligned_list:
+                    if len(row) % 2 == 0:
+                        for i in range(0, len(row), 2):
+                            if i + 1 < len(row):
+                                dict_table[row[i]] = row[i + 1]
+                if dict_table:
+                    # 获取字典中所有的键并打印
+                    keys = dict_table.keys()
+                    for key in keys:
+                        if '品牌' in key and brand == '':
+                            brand = dict_table[key]
+                        if any(th in key for th in
+                               succeed_prices) and succeed_price == '' and from_data_1_cannels == 'succeed':
+                            succeed_price = dict_table[key]
+                        if any(th in key for th in
+                               bidding_prices) and bidding_prices == '' and (
+                                        from_data_1_cannels == 'bidding' or from_data_1_cannels == 'cgall'):
+                            bidding_price = dict_table[key]
+                        if any(th in key for th in suppliers) and supplier == '':
+                            supplier = dict_table[key]
+
     # 扫描网页所有文本
     texts = html_3.xpath('//text()')
     for text in texts:
@@ -239,21 +263,25 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
             if th in text and supplier == '' and re.search(pattern, text) != None:
                 supplier = re.search(pattern, text).group(1)
 
-        for th in succeed_prices:
-            pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
-            if th in text and succeed_price == '' and re.search(pattern, text) != None:
-                succeed_price = re.search(pattern, text).group(1)
+        if Information_category == 'succeed':
+            for th in succeed_prices:
+                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
+                if th in text and succeed_price == '' and re.search(pattern, text) != None:
+                    succeed_price = re.search(pattern, text).group(1)
 
-        if any(th in text for th in bidding_prices) and succeed_price == '' and re.search(r"：\s*(.*)", text) != None and from_data_1_cannels == 'bidding':
-            bidding_price = re.search(r"：\s*(.*)", text).group(1)
+        if Information_category == 'bidding':
+            for th in bidding_prices:
+                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
+                if th in text and bidding_price == '' and re.search(pattern, text) != None:
+                    bidding_price = re.search(pattern, text).group(1)
 
     # 下载网页中存在的附件
     Appendix = ''
-    if html_3.xpath('//p/a[@target="_parent"]'):
-        for appendix in html_3.xpath('//p/a[@target="_parent"]'):
+    if html_3.xpath('//a[@target="_parent"]'):
+        for appendix in html_3.xpath('//a[@target="_parent"]'):
             appendix_URL = appendix.xpath('.//@href')[0]
             appendix_name = appendix.xpath('.//text()')[0]
-            Appendix = Appendix + appendix_name + ' :' + appendix_URL + '\n'
+            Appendix = '\n' + Appendix + appendix_name + ' :' + appendix_URL
 
     return brand, supplier, succeed_price, bidding_price, Appendix
 
@@ -330,8 +358,10 @@ def main(total_page):
                     brand, supplier, succeed_price, bidding_price, appendix = analysis_detail_Url(Information_category, html_3, thing)
                     st.write("品牌：", brand)
                     st.write("供应商：", supplier)
-                    st.write("中标金额：", succeed_price)
-                    st.write("招标金额：", bidding_price)
+                    if Information_category == 'succeed':
+                        st.write("中标金额：", succeed_price)
+                    if Information_category == 'bidding':
+                        st.write("招标金额：", bidding_price)
                     st.write("标的物：", thing)
                     st.write("附件：", appendix)
                     # 合成二维列表
@@ -370,14 +400,17 @@ if __name__ == '__main__':
     url_target = 'https://user.zhaobiao.cn/homePageUc.do'
     # 查询网页所需要的关键字
     suppliers = ['供应商名称', '成交企业', '拟成交公司', '成交单位', '中标人', '成交候选人', '制造商', '成交供应商',
-                 '中选机构', '拟中标公司']
-    succeed_prices = ['成交价（元）', '中标金额', '中标（成交）金额', '总价(元)', '预算金额', '成交金额（元）',
+                 '中选机构', '拟中标公司', '中选人', '中标 (成交)单位']
+    succeed_prices = ['成交价（元）', '中标金额', '中标（成交）金额', '总价(元)', '成交金额（元）',
                       '中标（成交）价', '成交价格', '拟成交金额', '中标（成交）结果', '报价（元）', '中选金额']
-    bidding_prices = ['预算金额', '控制金额(元)', '招标控制价', '品目预算(元)', '最高限价（元）', '项目预算',
-                      '成交价（元）']
+    bidding_prices = ['预算金额', '控制金额(元)', '招标控制价', '品目预算(元)', '最高限价', '项目预算',
+                      '成交价（元）', '采购预算金额 （元）', '采购预算']
     # 创建一个会话对象保持动态连接
     session = requests.Session()
+    st.set_page_config(page_title="招标网爬取工具")
     st.title("招标网爬取工具")   # Streamlit应用程序的标题和描述
+    user_name = st.sidebar.text_input('输入用户名')
+    secret = st.sidebar.text_input('输入密码')
     choose = st.sidebar.selectbox('爬取数据选项', ['爬取一年内的数据', '访问历史库往年数据'])
     if choose == '爬取一年内的数据':
         year_data = st.container()
@@ -388,12 +421,18 @@ if __name__ == '__main__':
             keyword = st.text_input("请输入产品的关键词：")
             keyword_list = st.text_input("请输入具体的关键词（多个关键字用空格分隔）：").split()
             Information_category = st.text_input(
-                '请根据提示输入你需要爬取的信息类别（如：招标公告：bidding；中标公告：succeed；招标预告：fore）：')
+                '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
+            if Information_category == '招标公告':
+                Information_category = 'bidding'
+            elif Information_category == '中标公告':
+                Information_category = 'succeed'
+            elif Information_category == '采购公告':
+                Information_category = 'cgall'
             start_time = st.text_input('请输入你要爬取的开始时间（如：20220605):')
             end_time = st.text_input('请输入你要爬取的结束时间（如：20220605):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target)
+            cookie = Get_Cookies(login_url, url_target, user_name, secret)
             total_page_1 = get_total_page_1(main_url, keyword, Information_category, start_time, end_time, cookie)
             time.sleep(5)
             main(total_page_1)
@@ -407,12 +446,18 @@ if __name__ == '__main__':
             keyword = st.text_input("请输入产品的关键词：")
             keyword_list = st.text_input("请输入具体的关键词（多个关键字用空格分隔）：").split()
             Information_category = st.text_input(
-                '请根据提示输入你需要爬取的信息类别（如：招标公告：bidding；中标公告：succeed；招标预告：fore）：')
+                '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
+            if Information_category == '招标公告':
+                Information_category = 'bidding'
+            elif Information_category == '中标公告':
+                Information_category = 'succeed'
+            elif Information_category == '采购公告':
+                Information_category = 'cgall'
             year = st.text_input('请输入你要需要访问的年份（如：2022):')
             month = st.text_input('请输入你要访问的月份（如：01):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target)
+            cookie = Get_Cookies(login_url, url_target, user_name, secret)
             total_page_2 = get_total_page_2(main_url, keyword, Information_category, year, month, cookie)
             time.sleep(5)
             main(total_page_2)
