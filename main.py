@@ -174,6 +174,30 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
     supplier = ''
     succeed_price = ''
     bidding_price = ''
+    # 扫描网页所有文本
+    texts = html_3.xpath('//text()')
+    for text in texts:
+        text = text.replace("\n", "").replace("\r", "").strip()
+        if '品牌' in text and brand == '' and re.search(r"[:：]\s*(.*)(?:，|$)", text) != None:
+            brand = re.search(r"[:：]\s*(.*)(?:，|$)", text).group(1)
+
+        for th in suppliers:
+            pattern = r"{th}：(.*?)(?:，|$)".format(th=th)
+            if th in text and supplier == '' and re.search(pattern, text) != None:
+                supplier = re.search(pattern, text).group(1)
+
+        if Information_category == 'succeed':
+            for th in succeed_prices:
+                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
+                if th in text and succeed_price == '' and re.search(pattern, text) != None:
+                    succeed_price = re.search(pattern, text).group(1)
+
+        if Information_category == 'bidding':
+            for th in bidding_prices:
+                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
+                if th in text and bidding_price == '' and re.search(pattern, text) != None:
+                    bidding_price = re.search(pattern, text).group(1)
+    
     # 构建网页中的表格信息
     table_elements = html_3.xpath('//table')
     for table_element in table_elements:  # 遍历网页中所有的表格（构造表格为竖状表格）
@@ -251,29 +275,6 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
                         if any(th in key for th in suppliers) and supplier == '':
                             supplier = dict_table[key]
 
-    # 扫描网页所有文本
-    texts = html_3.xpath('//text()')
-    for text in texts:
-        text = text.replace("\n", "").replace("\r", "").strip()
-        if '品牌' in text and brand == '' and re.search(r"[:：]\s*(.*)(?:，|$)", text) != None:
-            brand = re.search(r"[:：]\s*(.*)(?:，|$)", text).group(1)
-
-        for th in suppliers:
-            pattern = r"{th}：(.*?)(?:，|$)".format(th=th)
-            if th in text and supplier == '' and re.search(pattern, text) != None:
-                supplier = re.search(pattern, text).group(1)
-
-        if Information_category == 'succeed':
-            for th in succeed_prices:
-                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
-                if th in text and succeed_price == '' and re.search(pattern, text) != None:
-                    succeed_price = re.search(pattern, text).group(1)
-
-        if Information_category == 'bidding':
-            for th in bidding_prices:
-                pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
-                if th in text and bidding_price == '' and re.search(pattern, text) != None:
-                    bidding_price = re.search(pattern, text).group(1)
 
     # 下载网页中存在的附件
     Appendix = ''
