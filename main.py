@@ -24,7 +24,6 @@ def Get_Cookies(url_login, url_target, user_name, secret):
             options.add_argument('--disable-gpu')
             options.add_argument('--headless')
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-<<<<<<< HEAD
             driver.get(url_login)
 
             zhanghao_mima = driver.find_element(By.ID, 'zh')
