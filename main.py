@@ -33,8 +33,8 @@ def Get_Cookies(url_login, url_target, user_name, secret):
             password_input = driver.find_element(By.ID, 'loginPassword')
             captcha = driver.find_element(By.ID, 'yzm')
             login_button = driver.find_element(By.CLASS_NAME, 'login_button')
-            username_input.send_keys(user_name)  # 填写用户名 zhjk2019
-            password_input.send_keys(secret)  # 填写密码 535cmeyr
+            username_input.send_keys(user_name)  # 填写用户名 
+            password_input.send_keys(secret)  # 填写密码 
             # 识别验证码部分
             png = driver.find_element(By.ID, 'randimg')
             screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
@@ -45,10 +45,10 @@ def Get_Cookies(url_login, url_target, user_name, secret):
             captcha.send_keys(res)  # 输入识别的验证码
             login_button.click()
             # 等待页面跳转
-            wait = WebDriverWait(driver, 10)
+            wait = WebDriverWait(driver, 8)
             try:
                 wait.until(EC.url_to_be(url_target))
-                time.sleep(5)
+                time.sleep(4)
                 cookie = driver.get_cookies()
                 strr = ''
                 for c in cookie:
@@ -269,7 +269,7 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
                 if th in text and succeed_price == '' and re.search(pattern, text) != None:
                     succeed_price = re.search(pattern, text).group(1)
 
-        if Information_category == 'bidding':
+        if (Information_category == 'bidding' or Information_category == 'cgall'):
             for th in bidding_prices:
                 pattern = r"{th}[^：]*：(.*?)(?:，|$)".format(th=th)
                 if th in text and bidding_price == '' and re.search(pattern, text) != None:
@@ -421,13 +421,7 @@ if __name__ == '__main__':
             keyword = st.text_input("请输入产品的关键词：")
             keyword_list = st.text_input("请输入具体的关键词（多个关键字用空格分隔）：").split()
             Information_category = st.text_input(
-                '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
-            if Information_category == '招标公告':
-                Information_category = 'bidding'
-            elif Information_category == '中标公告':
-                Information_category = 'succeed'
-            elif Information_category == '采购公告':
-                Information_category = 'cgall'
+                '请根据提示输入你需要爬取的信息类别（如：招标公告:bidding、中标公告:succeed、采购公告:cgall）：')
             start_time = st.text_input('请输入你要爬取的开始时间（如：20220605):')
             end_time = st.text_input('请输入你要爬取的结束时间（如：20220605):')
             submit_button = st.form_submit_button('开始爬取')
@@ -446,13 +440,7 @@ if __name__ == '__main__':
             keyword = st.text_input("请输入产品的关键词：")
             keyword_list = st.text_input("请输入具体的关键词（多个关键字用空格分隔）：").split()
             Information_category = st.text_input(
-                '请根据提示输入你需要爬取的信息类别（如：招标公告、中标公告、采购公告）：')
-            if Information_category == '招标公告':
-                Information_category = 'bidding'
-            elif Information_category == '中标公告':
-                Information_category = 'succeed'
-            elif Information_category == '采购公告':
-                Information_category = 'cgall'
+                '请根据提示输入你需要爬取的信息类别（如：招标公告:bidding、中标公告:succeed、采购公告:cgall）：')
             year = st.text_input('请输入你要需要访问的年份（如：2022):')
             month = st.text_input('请输入你要访问的月份（如：01):')
             submit_button = st.form_submit_button('开始爬取')
