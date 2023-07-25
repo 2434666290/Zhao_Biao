@@ -464,8 +464,3 @@ if __name__ == '__main__':
             main(total_page_2)
             download_df_to_excel()
             st.write(df)
-
-
-=======
-            driver.get(url_lo
->>>>>>> 1d114c84cf8a21696009bd2576199b455c8391d0
