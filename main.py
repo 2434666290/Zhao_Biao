@@ -174,8 +174,6 @@ def analysis_detail_Url(from_data_1_cannels, html_3, thing):
     supplier = ''
     succeed_price = ''
     bidding_price = ''
-   
-    
     # 构建网页中的表格信息
     table_elements = html_3.xpath('//table')
     for table_element in table_elements:  # 遍历网页中所有的表格（构造表格为竖状表格）
@@ -465,8 +463,3 @@ if __name__ == '__main__':
             main(total_page_2)
             download_df_to_excel()
             st.write(df)
-<<<<<<< HEAD
-
-
-=======
->>>>>>> a1992190f028f6903b4d45ca5236e2a43662ddc1
