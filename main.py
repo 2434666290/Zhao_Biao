@@ -33,8 +33,8 @@ def Get_Cookies(url_login, url_target, user_name, secret):
             password_input = driver.find_element(By.ID, 'loginPassword')
             captcha = driver.find_element(By.ID, 'yzm')
             login_button = driver.find_element(By.CLASS_NAME, 'login_button')
-            username_input.send_keys(user_name)  # 填写用户名 
-            password_input.send_keys(secret)  # 填写密码 
+            username_input.send_keys('zhjk2019')  # 填写用户名 
+            password_input.send_keys('535cmeyr')  # 填写密码 
             # 识别验证码部分
             png = driver.find_element(By.ID, 'randimg')
             screenshot = png.screenshot_as_png  # 获取屏幕截图的二进制数据
@@ -409,8 +409,6 @@ if __name__ == '__main__':
     session = requests.Session()
     st.set_page_config(page_title="招标网爬取工具")
     st.title("招标网爬取工具")   # Streamlit应用程序的标题和描述
-    user_name = st.sidebar.text_input('输入用户名')
-    secret = st.sidebar.text_input('输入密码')
     choose = st.sidebar.selectbox('爬取数据选项', ['爬取一年内的数据', '访问历史库往年数据'])
     if choose == '爬取一年内的数据':
         year_data = st.container()
@@ -432,7 +430,7 @@ if __name__ == '__main__':
             end_time = st.text_input('请输入你要爬取的结束时间（如：20220605):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target, user_name, secret)
+            cookie = Get_Cookies(login_url, url_target)
             total_page_1 = get_total_page_1(main_url, keyword, Information_category, start_time, end_time, cookie)
             time.sleep(5)
             main(total_page_1)
@@ -457,7 +455,7 @@ if __name__ == '__main__':
             month = st.text_input('请输入你要访问的月份（如：01):')
             submit_button = st.form_submit_button('开始爬取')
         if submit_button:
-            cookie = Get_Cookies(login_url, url_target, user_name, secret)
+            cookie = Get_Cookies(login_url, url_target)
             total_page_2 = get_total_page_2(main_url, keyword, Information_category, year, month, cookie)
             time.sleep(5)
             main(total_page_2)
