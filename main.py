@@ -16,7 +16,7 @@ import pandas as pd
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-def Get_Cookies(url_login, url_target, user_name, secret):
+def Get_Cookies(url_login, url_target):
     strr = ''  # 创建空的cookie值
     with st.spinner('Loading cookie...'):
         while (True):
